@@ -1,0 +1,519 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Pima Indians Diabetes</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <!--  Prism.css  -->
+    <link rel="stylesheet" href="css/prism.css">
+    <!--  Bootstrap.css  -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!--  Custom css Files-->
+    <link rel="stylesheet" href="./css/style.css">
+    <!--  Jquery  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--  Chart.js  -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <!--  MathJax  -->
+    <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!--  Prism.js  -->
+    <script src="js/prism.js"></script>
+    <!--  Bootstrap.js  -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" 
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" 
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <!--  Custom Js Files  -->
+    <script src="js/graphs.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-3">Pima Indians Diabetes</h1>
+    </div>
+    <hr>
+    <div class="sm-gap"></div>
+    <div class="container">
+        <img 
+            src="https://storage.googleapis.com/kaggle-datasets-images/228/482/a520351269b547c89afe790820a1087e/dataset-cover.jpeg"
+            style="width: 100%;"
+        >
+        <p class="mt-3">
+            September, 2020
+        </p>
+        <p class="mt-4">
+            Recently while suffering on kaggle and wanting to do some comprative study using various models to do some classification, 
+            I came across this problem. I would love to show you my findings on this problem. I used Neural network, SVM and Navie Bayes 
+            classifier.
+        </p>
+        <h2>Data analysis and preprocessing</h2>
+        <p class="mt-4">
+            First and foremost we should look whether the data has any null data or not. 
+            If we run the basic code we will get the following table.
+            <pre>
+                <code class="language-python">
+import pandas as pd
+import numpy as np
+import pandas as pd
+
+import matplotlib.pyplot as plt 
+%matplotlib inline  
+import plotly.offline as py
+import plotly.express as px
+import plotly.graph_objs as go
+from plotly.offline import download_plotlyjs,init_notebook_mode,plot, iplot
+import plotly.tools as tls
+import plotly.figure_factory as ff
+py.init_notebook_mode(connected=True)
+
+from mlxtend.preprocessing import minmax_scaling
+
+data = pd.read_csv('diabetes.csv')
+data.info()
+                </code>
+            </pre>
+        </p>
+        <table class="table table-striped">
+            <thead>
+                <tr class="bg-color-gray">
+                    <th>#</th>
+                    <th>Column</th>
+                    <th class="text-center">Non-Null Count</th>
+                    <th class="text-center">Dtype</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>Pregnancies</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">int64</td>
+                </tr>
+                <tr >
+                    <td>1</td>
+                    <td>Glucose</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">int64</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>BloodPressure</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">int64</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>SkinThickness</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">int64</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Insulin</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">int64</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>BMI</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">float64</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>DiabetesPedigreeFunction</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">float64</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Age</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">int64</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Outcome</td>
+                    <td class="text-center">768 non-null</td>
+                    <td class="text-center">int64</td>
+                </tr>
+            </tbody>
+        </table>
+            <p class="text">
+                Sometimes the data will use -1, 0, -999, 1 etc as null values. Best way to find it out is to plot histogram of all the
+                columns. If we see a non-distributed peak at a variable, and if logically the peak at that value does not hold any meaning 
+                we can assume that value is our null value.<br>
+                I have shown histogram plot of blood pressure below.
+                <pre>
+                    <code class="lang-python">
+import seaborn as sns
+plt.figure(figsize=(15,8))
+sns.distplot(data.BloodPressure, bins =30)
+                    </code>
+                </pre>
+                <img src="./img/bloodpressure.png" alt="" style="width: 100%;">
+                From the above image it is clear that 0 is our null value as it has a quite a peak, but also because logically 
+                a person cannot have zero blood pressure. Let's replace all 0's to NaN value and plot to see number of missing data 
+                per feature.
+                <pre>
+                    <code class="lang-python">
+data[
+    ['Glucose','BloodPressure','SkinThickness','Insulin','BMI','DiabetesPedigreeFunction','Age']
+] = data[
+    ['Glucose','BloodPressure','SkinThickness','Insulin','BMI','DiabetesPedigreeFunction','Age']
+].replace(0,np.NaN)
+                    </code>
+                </pre>
+                <pre>
+                    <code class="lang-python">
+def missing_plot(dataset, key) :
+    null_values = pd.DataFrame(dataset.isnull().sum(), columns = ['Count'])
+
+    trace = go.Bar(
+        x = null_values.index, y = null_values['Count'] ,opacity = 0.8, 
+        text = null_values['Count'],  textposition = 'auto',
+        marker=dict(color = '#7EC0EE', line=dict(color='#000000',width=1.5)
+    ))
+
+    layout = dict(title =  "Missing Values")
+
+    fig = dict(data = [trace], layout=layout)
+    py.iplot(fig)
+
+missing_plot(data, 'Outcome')
+                    </code>
+                </pre>
+                <canvas id="missingValuesContainer" style="width: 100%;height: 500px;"></canvas>
+                Usually there are two ways to overcome this problem:
+                <ol>
+                    <li>Dropping observations that have missing values.</li>
+                    <li>Replaying missing value, using the other observations.</li>
+                </ol>
+            Dropping observations is not considered a good practise in most cases as dropping means we are letting go of 
+            valuable information. We will be using the second way to overcome this problem, we will fill the missing values 
+            with the median of the data.
+                <pre>
+                    <code class="lang-python">
+def find_median(var):
+    temp = data[data[var].notnull()]
+    temp = data[[var,'Outcome']].groupby('Outcome')[[var]].median().reset_index()
+    return temp
+
+for i, col in enumerate(data.columns):
+    if(col == 'Outcome'):
+        continue
+    medians = find_median(col).to_numpy()
+    data.loc[(data['Outcome'] == 0) & (data[col].isnull()) , col] = medians[0][1] # Median of Non-diabetics
+    data.loc[(data['Outcome'] == 1) & (data[col].isnull()) , col] = medians[1][1] # Median of diabetics
+
+display(data.isnull().sum())
+                    </code>
+                </pre>
+                This will replace all the null-values with the median of the data.
+            </p>
+            <h3>Correlation</h3>
+            It might be helpful to know the correlation between variables. Here, I will show the heatmap and the scatterplot distribution 
+            taken pairwise.
+            <pre>
+                <code class="lang-python">
+# Correlation and heatmap
+cor=data.corr()
+plt.figure(figsize=(12,12))
+sns.heatmap(cor,annot=True,cmap='coolwarm')
+plt.savefig('heatmap.png')
+plt.show()
+                </code>
+            </pre>
+            <img src="img/heatmap.png" alt="">
+            <p style="font-size: 12px; text-align: center;">Heatmap</p>
+            <pre>
+                <code class="lang-python">
+# Pairwise scatterplot
+sns.pairplot(data=data,hue='Outcome',diag_kind='scatter')
+plt.savefig('pairwise-scatter.png')
+plt.show()
+                </code>
+            </pre>
+            <img src="img/pairwise-scatter.png" alt="" style="width: 100%;">
+            <p style="font-size: 12px; text-align: center;">Pairwise scatterplot</p>
+            <h3>Standard scaling</h3>
+            Standardize features by removing the mean and scaling to unit variance. The standard score of a sample x is calculated as:
+            $$
+                z = \frac{(x - \mu)}{s}
+            $$
+            where \(\mu\) is the mean of the triaining sample and s is the standard deviation of the training sample.<br>
+            This is important as SVM will assume by default that the data is centered and have variance in the same order.
+            <pre>
+                <code class="lang-python">
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+X = data[['Pregnancies','Glucose','BloodPressure','SkinThickness','Insulin','BMI','DiabetesPedigreeFunction','Age']]
+Y = data.Outcome
+X_train,X_test,y_train,y_test=train_test_split(X,Y,test_size=0.2)
+stdScalar = StandardScaler()
+stdScalar.fit(X_train)
+X_train = stdScalar.transform(X_train)
+X_test = stdScalar.transform(X_test)
+                </code>
+            </pre>
+            <h2 class="mt-4">Neural network classifier model</h2>
+            <pre>
+                <code class="lang-python">
+def build_model():
+    model = tf.keras.Sequential([
+        tf.keras.layers.Dense(8, activation='relu', input_shape=[len(X_train[0])]),
+        tf.keras.layers.Dense(4, activation='relu'),
+        tf.keras.layers.Dense(1,activation='sigmoid')
+    ])
+
+    optimizer = tf.keras.optimizers.Adam(0.001)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    return model
+                </code>
+            </pre>
+            <pre>
+                <code class="lang-python">
+history = model.fit(X_train, y_train,epochs=1000, verbose=2)
+pred = model.predict(X_test)
+pred[pred <= 0.5] = 0
+pred[pred > 0.5] = 1
+print(classification_report(y_test, pred))
+                </code>
+            </pre>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>preicison</th>
+                        <th>recall</th>
+                        <th>f1-score</th>
+                        <th>support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>0.88</td>
+                        <td>0.90</td>
+                        <td>0.89</td>
+                        <td>99</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0.81</td>
+                        <td>0.78</td>
+                        <td>0.80</td>
+                        <td>55</td>
+                    </tr>
+                    <tr>
+                        <td>accuracy</td>
+                        <td></td>
+                        <td></td>
+                        <td>0.86</td>
+                        <td>154</td>
+                    </tr>
+                    <tr>
+                        <td>macro average</td>
+                        <td>0.85</td>
+                        <td>0.84</td>
+                        <td>0.84</td>
+                        <td>154</td>
+                    </tr>
+                    <tr>
+                        <td>weighted avg</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                        <td>154</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2 class="mt-4">Naive Bayes classifier</h2>
+            <pre>
+                <code class="lang-python">
+from sklearn.naive_bayes import GaussianNB
+
+classifier = GaussianNB()
+classifier.fit(X_train,y_train)
+pred = classifier.predict(X_test)
+print(classification_report(y_test, pred))
+                </code>
+            </pre>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>preicison</th>
+                        <th>recall</th>
+                        <th>f1-score</th>
+                        <th>support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>0.78</td>
+                        <td>0.82</td>
+                        <td>0.80</td>
+                        <td>99</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0.64</td>
+                        <td>0.58</td>
+                        <td>0.61</td>
+                        <td>55</td>
+                    </tr>
+                    <tr>
+                        <td>accuracy</td>
+                        <td></td>
+                        <td></td>
+                        <td>0.73</td>
+                        <td>154</td>
+                    </tr>
+                    <tr>
+                        <td>macro average</td>
+                        <td>0.71</td>
+                        <td>0.70</td>
+                        <td>0.70</td>
+                        <td>154</td>
+                    </tr>
+                    <tr>
+                        <td>weighted avg</td>
+                        <td>0.73</td>
+                        <td>0.73</td>
+                        <td>0.73</td>
+                        <td>154</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2 class="mt-4">Support vector machine(SVM)</h2>
+            <pre><code class="lang-python">
+from sklearn import svm
+for i in range(1, 100):
+    svm_classifier = svm.SVC(C=i, kernel="rbf")
+
+    svm_classifier.fit(X_train,y_train)
+    pred = svm_classifier.predict(X_test)
+    if(accuracy_score(y_test, pred) > 0.85):
+        print(f"C= {i}")
+        print(classification_report(y_test, pred))
+            </code></pre>
+            <p>
+                We can see having C = 3 or 4 or 5 gives us best result.<br>
+            </p>
+                        <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>preicison</th>
+                        <th>recall</th>
+                        <th>f1-score</th>
+                        <th>support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>0.86</td>
+                        <td>0.92</td>
+                        <td>0.89</td>
+                        <td>99</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>0.83</td>
+                        <td>0.73</td>
+                        <td>0.78</td>
+                        <td>55</td>
+                    </tr>
+                    <tr>
+                        <td>accuracy</td>
+                        <td></td>
+                        <td></td>
+                        <td>0.85</td>
+                        <td>154</td>
+                    </tr>
+                    <tr>
+                        <td>macro average</td>
+                        <td>0.85</td>
+                        <td>0.82</td>
+                        <td>0.83</td>
+                        <td>154</td>
+                    </tr>
+                    <tr>
+                        <td>weighted avg</td>
+                        <td>0.85</td>
+                        <td>0.85</td>
+                        <td>0.85</td>
+                        <td>154</td>
+                    </tr>
+                </tbody>
+            </table>
+        <h2 class="mt-4">Conclusion</h2>
+        <p>
+            We can conclude that Neural networks gives us the best results in terms of Recall and F1-score.
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>preicison</th>
+                        <th>recall</th>
+                        <th>f1-score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Neural Network</td>
+                        <td>0.85</td>
+                        <td>0.84</td>
+                        <td>0.84</td>
+                    </tr>
+                    <tr>
+                        <td>Naive Bayes</td>
+                        <td>0.71</td>
+                        <td>0.70</td>
+                        <td>0.73</td>
+                    </tr>
+                    <tr>
+                        <td>SVM</td>
+                        <td>0.85</td>
+                        <td>0.82</td>
+                        <td>0.83</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <b>NOTE: </b>In health it is very important to maximise the recall rather than precision.
+            <h3>Links</h3>
+            Dataset link: <a href="https://www.kaggle.com/uciml/pima-indians-diabetes-database/tasks?taskId=1163">
+                https://www.kaggle.com/uciml/pima-indians-diabetes-database/tasks?taskId=1163
+                </a>
+            <br>
+            My Kaggle notebook link: <a href="https://www.kaggle.compima-indians-diabetes-comparative-study">https://www.kaggle.compima-indians-diabetes-comparative-study</a>
+        </p>
+    </div>
+
+    <!--  Footer   -->
+    <hr>
+    <footer class="container">
+        <p style="text-align: center;">
+            <a href="https://github.com/shaswa123">
+                <img src="./img/GitHub.png" alt="">
+            </a>
+        </p>
+        <p style="text-align: center;">Shaswat Patel - 2020</p>
+    </footer>
+</body>
+
+</html>
+
+<!--  
+    background-color: #171717;  
+    Fill color: #111111;
+    Roboto, Helvetica, sans-serif
+    "Noto Sans JP", sans-serif
+-->
